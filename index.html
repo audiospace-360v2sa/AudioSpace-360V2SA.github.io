@@ -191,94 +191,120 @@
             'videos_gen/VEvawqEmWQo_29.webm',
             'videos_gen/Wc_gzO9i38k_15.webm',
         ];
-    
+
         // Create a video player container with demo-player.html iframe
-        function createVideoPlayer(videoPath) {
+        function createVideoPlayer2(videoPath, isMain) {
             const playerContainer = document.createElement('div');
             playerContainer.className = 'video-player-container';
-    
-            // Add styles for the container, including a gray border
-            playerContainer.style.border = '2px solid gray';  // Add a gray border
-            playerContainer.style.padding = '10px';  // Optional: Add padding inside the border
-            playerContainer.style.borderRadius = '10px';  // Optional: Round the corners of the border
-            playerContainer.style.backgroundColor = '#f9f9f9';  // Optional: Add a light gray background inside the border
-    
-            const iframe = document.createElement('iframe');
-            iframe.src = `demo-player.html?videoPath=${encodeURIComponent(videoPath)}`;
-            iframe.width = '100%';
-            iframe.height = '100%';
-    
-            playerContainer.appendChild(iframe);
+            playerContainer.style.position = 'relative';
+
+            // Add styles for the container
+            playerContainer.style.border = '2px solid gray';
+            playerContainer.style.padding = '10px';
+            playerContainer.style.borderRadius = '10px';
+            playerContainer.style.backgroundColor = '#f9f9f9';
+
+            // Initially, use a canvas to show the first frame of the video
+            const thumbnailCanvas = document.createElement('canvas');
+            const thumbnailContext = thumbnailCanvas.getContext('2d');
+            thumbnailCanvas.width = 320;  // Set desired width for the thumbnail
+            thumbnailCanvas.height = 180; // Set desired height for the thumbnail
+
+            const videoElement = document.createElement('video');
+            videoElement.src = videoPath;
+            videoElement.preload = 'metadata'; // Preload metadata to get the first frame
+
+            videoElement.onloadedmetadata = function() {
+                // Once the metadata is loaded, we can draw the first frame on the canvas
+                videoElement.currentTime = 0;
+                videoElement.onseeked = function() {
+                    thumbnailContext.drawImage(videoElement, 0, 0, thumbnailCanvas.width, thumbnailCanvas.height);
+                };
+            };
+
+            // If it's the main (center) video, create an iframe for playing
+            if (isMain) {
+                const iframe = document.createElement('iframe');
+                iframe.src = `demo-player.html?videoPath=${encodeURIComponent(videoPath)}`;
+                iframe.width = '100%';
+                iframe.height = '100%';
+                iframe.style.border = 'none';
+                playerContainer.appendChild(iframe);
+            } else {
+                playerContainer.appendChild(thumbnailCanvas);
+            }
+
+            // Add fullscreen button
+            const fullscreenBtn = document.createElement('button');
+            fullscreenBtn.innerHTML = '⛶';
+            fullscreenBtn.style.position = 'absolute';
+            fullscreenBtn.style.top = '10px';
+            fullscreenBtn.style.right = '10px';
+            fullscreenBtn.style.padding = '10px';
+            fullscreenBtn.style.fontSize = '20px';
+            fullscreenBtn.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+            fullscreenBtn.style.color = 'white';
+            fullscreenBtn.style.border = 'none';
+            fullscreenBtn.style.borderRadius = '50%';
+            fullscreenBtn.style.cursor = 'pointer';
+
+            fullscreenBtn.addEventListener('click', function() {
+                if (!document.fullscreenElement) {
+                    playerContainer.requestFullscreen();
+                } else {
+                    document.exitFullscreen();
+                }
+            });
+
+            playerContainer.appendChild(fullscreenBtn);
             return playerContainer;
         }
-    
+        let currentIndex = 0;  // 初始化 currentIndex 确保它从 0 开始
+
         // Populate the carousel with the first three videos initially
         const carousel = document.getElementById('carousel');
-        const firstVideoPlayer = createVideoPlayer(videoPaths[0]);
-        const secondVideoPlayer = createVideoPlayer(videoPaths[1]);
+        const firstVideoPlayer = createVideoPlayer2(videoPaths[currentIndex], true);
+        const secondVideoPlayer = createVideoPlayer2(videoPaths[(currentIndex + 1) % videoPaths.length], false);
+        const thirdVideoPlayer = createVideoPlayer2(videoPaths[(currentIndex + 2) % videoPaths.length], false);
         carousel.appendChild(firstVideoPlayer);
         carousel.appendChild(secondVideoPlayer);
-    
-        // Track the current index of the video being displayed
-        let currentIndex = 0;
-    
-        // Handle carousel movement (left or right)
+        carousel.appendChild(thirdVideoPlayer);
+        
         function moveCarousel(direction) {
             // Update the current index, allowing for wrap-around
             currentIndex = (currentIndex + direction + videoPaths.length) % videoPaths.length;
-    
-            // Clear the carousel and add the new video players
-            carousel.innerHTML = ''; // Clear existing content
-    
-            // Create previous, current, and next video containers
-            const prevVideoIndex = (currentIndex - 1 + videoPaths.length) % videoPaths.length;
-            const nextVideoIndex = (currentIndex + 1) % videoPaths.length;
-    
-            const prevVideoPlayer = createVideoPlayer(videoPaths[prevVideoIndex]);
-            const currentVideoPlayer = createVideoPlayer(videoPaths[currentIndex]);
-            const nextVideoPlayer = createVideoPlayer(videoPaths[nextVideoIndex]);
-    
-            // Set the current video player in the middle
+
             const videoWrapper = document.createElement('div');
             videoWrapper.style.display = 'flex';
             videoWrapper.style.justifyContent = 'center';
             videoWrapper.style.position = 'relative';
-    
-            prevVideoPlayer.style.width = '50%';
-            nextVideoPlayer.style.width = '50%';
+
+            const prevVideoIndex = (currentIndex - 1 + videoPaths.length) % videoPaths.length;
+            const nextVideoIndex = (currentIndex + 1) % videoPaths.length;
+
+            const prevVideoPlayer = createVideoPlayer2(videoPaths[prevVideoIndex], false);
+            const currentVideoPlayer = createVideoPlayer2(videoPaths[currentIndex], true);
+            const nextVideoPlayer = createVideoPlayer2(videoPaths[nextVideoIndex], false);
+
+            // Set the current video player in the middle
+            prevVideoPlayer.style.width = '20%';
+            nextVideoPlayer.style.width = '20%';
             currentVideoPlayer.style.width = '100%';
-    
+
             videoWrapper.appendChild(prevVideoPlayer);
             videoWrapper.appendChild(currentVideoPlayer);
             videoWrapper.appendChild(nextVideoPlayer);
-    
+
+            carousel.innerHTML = ''; // Clear the carousel and append the new video wrapper
             carousel.appendChild(videoWrapper);
-    
-            // Update the video ID caption below the current video
+
             const videoIdElement = document.getElementById('video-id');
             videoIdElement.innerText = ``;
         }
-    
+
         // Initialize the carousel
-        moveCarousel(0); // Initially populate the carousel with the first video set
-    </script>
-    <script>
-        window.onload = function() {
-          var figures = document.querySelectorAll('figure');
-          for (var i = 0; i < figures.length; i++) {
-            figures[i].id = 'fig' + (i + 1);
-            figures[i].querySelector('figcaption').innerHTML = 'Figure ' + (i + 1);
-          }
-          
-          var tables = document.querySelectorAll('table');
-          for (var j = 0; j < tables.length; j++) {
-            tables[j].id = 'table' + (j + 1);
-            var caption = tables[j].querySelector('caption');
-            if (caption) {
-              caption.innerHTML = 'Table ' + (j + 1);
-            }
-          }
-        };
+        moveCarousel(0);
+
     </script>
     <!-- Image section -->
     <div class="image-container">
@@ -478,7 +504,7 @@
     
             const fullscreenButton = document.createElement('button');
             fullscreenButton.className = 'fullscreen-btn';
-            fullscreenButton.innerText = 'Full Screen';
+            fullscreenButton.innerText = '⛶';
             fullscreenButton.onclick = () => toggleFullscreen(playerContainer);
     
             playerContainer.appendChild(iframe);
