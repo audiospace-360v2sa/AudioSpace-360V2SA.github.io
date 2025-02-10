@@ -344,14 +344,13 @@
                 sectionDiv.style.display = 'block';
                 sectionDiv.innerHTML = '';  
                 sectionDiv.appendChild(generateSectionContent(startIndex, endIndex));
-
-                foldButton.style.backgroundColor = '#D3D3D3'; 
             } else {
                 sectionDiv.style.display = 'none';
-
-                foldButton.style.backgroundColor = '#4CAF50'; 
             }
+
+            foldButton.style.backgroundColor = isHidden ? '#D3D3D3' : '#4CAF50';
         }
+
 
     
         function generateSectionContent(startIndex, endIndex) {
