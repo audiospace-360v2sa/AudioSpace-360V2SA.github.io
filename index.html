@@ -192,12 +192,14 @@
             'videos_gen/Wc_gzO9i38k_15.webm',
         ];
 
+        let currentIndex = 0;  // 初始化 currentIndex 确保它从 0 开始
+
         // Create a video player container with demo-player.html iframe
         function createVideoPlayer2(videoPath, isMain) {
             const playerContainer = document.createElement('div');
             playerContainer.className = 'video-player-container';
             playerContainer.style.position = 'relative';
-
+            
             // Add styles for the container
             playerContainer.style.border = '2px solid gray';
             playerContainer.style.padding = '10px';
@@ -231,35 +233,42 @@
                 iframe.style.border = 'none';
                 playerContainer.appendChild(iframe);
             } else {
+                // For the side videos, show the first frame centered within the container
+                playerContainer.style.display = 'flex';
+                playerContainer.style.alignItems = 'center';  // Vertically center the thumbnail
+                playerContainer.style.justifyContent = 'center';  // Horizontally center the thumbnail
+                playerContainer.style.overflow = 'hidden';  // Hide any overflowing content
                 playerContainer.appendChild(thumbnailCanvas);
             }
 
-            // Add fullscreen button
-            const fullscreenBtn = document.createElement('button');
-            fullscreenBtn.innerHTML = '⛶';
-            fullscreenBtn.style.position = 'absolute';
-            fullscreenBtn.style.top = '10px';
-            fullscreenBtn.style.right = '10px';
-            fullscreenBtn.style.padding = '10px';
-            fullscreenBtn.style.fontSize = '20px';
-            fullscreenBtn.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-            fullscreenBtn.style.color = 'white';
-            fullscreenBtn.style.border = 'none';
-            fullscreenBtn.style.borderRadius = '50%';
-            fullscreenBtn.style.cursor = 'pointer';
+            // Remove the fullscreen button for side videos
+            if (isMain) {
+                const fullscreenBtn = document.createElement('button');
+                fullscreenBtn.innerHTML = '⛶';
+                fullscreenBtn.style.position = 'absolute';
+                fullscreenBtn.style.top = '10px';
+                fullscreenBtn.style.right = '10px';
+                fullscreenBtn.style.padding = '10px';
+                fullscreenBtn.style.fontSize = '20px';
+                fullscreenBtn.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+                fullscreenBtn.style.color = 'white';
+                fullscreenBtn.style.border = 'none';
+                fullscreenBtn.style.borderRadius = '50%';
+                fullscreenBtn.style.cursor = 'pointer';
 
-            fullscreenBtn.addEventListener('click', function() {
-                if (!document.fullscreenElement) {
-                    playerContainer.requestFullscreen();
-                } else {
-                    document.exitFullscreen();
-                }
-            });
+                fullscreenBtn.addEventListener('click', function() {
+                    if (!document.fullscreenElement) {
+                        playerContainer.requestFullscreen();
+                    } else {
+                        document.exitFullscreen();
+                    }
+                });
 
-            playerContainer.appendChild(fullscreenBtn);
+                playerContainer.appendChild(fullscreenBtn);
+            }
+
             return playerContainer;
         }
-        let currentIndex = 0;  // 初始化 currentIndex 确保它从 0 开始
 
         // Populate the carousel with the first three videos initially
         const carousel = document.getElementById('carousel');
@@ -269,7 +278,7 @@
         carousel.appendChild(firstVideoPlayer);
         carousel.appendChild(secondVideoPlayer);
         carousel.appendChild(thirdVideoPlayer);
-        
+
         function moveCarousel(direction) {
             // Update the current index, allowing for wrap-around
             currentIndex = (currentIndex + direction + videoPaths.length) % videoPaths.length;
@@ -287,8 +296,8 @@
             const nextVideoPlayer = createVideoPlayer2(videoPaths[nextVideoIndex], false);
 
             // Set the current video player in the middle
-            prevVideoPlayer.style.width = '20%';
-            nextVideoPlayer.style.width = '20%';
+            prevVideoPlayer.style.width = '35%';
+            nextVideoPlayer.style.width = '35%';
             currentVideoPlayer.style.width = '100%';
 
             videoWrapper.appendChild(prevVideoPlayer);
@@ -304,6 +313,7 @@
 
         // Initialize the carousel
         moveCarousel(0);
+
 
     </script>
     <!-- Image section -->
