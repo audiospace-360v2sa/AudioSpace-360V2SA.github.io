@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>AudioSpace: Generating Spatial Audio from 360-Degree Video</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            text-align: center;
+            padding: 0; 
+            background-color: #f7f7f7;
+            width: 1000px; 
+            margin: 0 auto; 
+        }
+
+        h1 {
+            margin-bottom: 40px;
+        }
+
+        h2 {
+            font-size: 18px;
+            text-align: left;
+            margin-bottom: 5px;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px solid #6f6b6b;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            text-align: left;
+        }
+        #video-selector {
+            width: 100%;
+            max-width: 900px;
+            margin: 20px auto;
+            display: flex;
+            flex-direction: column; /* Stack the rows vertically */
+            gap: 80px; /* Increase space between video rows */
+        }
+        .chapter-title {
+            font-family: 'Quicksand', sans-serif; 
+            font-size: 18px;
+            text-align: left;
+            margin-bottom: 5px;
+            color: #777; 
+        }
+
+        .chapter-line {
+            border: none;
+            border-top: 2px solid #d0d0d0; 
+            margin-top: 5px;
+            margin-bottom: 5px;
+            text-align: left;
+        }
+        .section {
+            background-color: #ffffff; /* White background for section */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Light shadow for separation */
+            margin-bottom: 40px; /* Add space below each section */
+        }
+        .section-title {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .video-row {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px; /* Space between videos */
+        }
+
+        /* Each video column size, reducing the width to fit 4 per row */
+        .video-column {
+            width: 22%; /* Make the videos smaller to fit 4 per row */
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+
+        .video-player-container {
+            width: 100%; /* Make video take up full width of the column */
+            height: 200px;
+            position: relative;
+        }
+        .video-player-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .fullscreen-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .caption {
+            font-size: 18px; /* Increase font size */
+            color: #555;
+            margin-top: 20px; /* Increase the space between caption and video */
+            margin-bottom: 20px; /* Add space below caption */
+            text-align: center;
+            font-weight: bold;
+            position: relative;
+            top: 0; /* Adjust caption position */
+            left: 50%;
+            transform: translateX(-50%); /* Center horizontally */
+        }
+        .video-title {
+            font-size: 16px; /* Increase font size for title */
+            color: #555;
+            margin-top: 20px; /* Increase space between video and title */
+        }
+        .image-container {
+            margin: 20px auto;
+            text-align: center;
+        }
+        .image-caption {
+            font-size: 16px;
+            color: #555;
+            margin-top: 10px;
+        }
+        
+        
+    </style>
+</head>
+<body>
+    <h1>AudioSpace: Generating Spatial Audio from 360-Degree Video</h1>
+
+    <!-- Abstract section -->
+    <div class="abstract" style="text-align: center;"></div>
+        <h2 class="chapter-title">Abstract</h2>
+        <hr class="chapter-line">
+        <p style="text-align: left;"> Traditional video-to-audio generation techniques primarily focus on field-of-view (FoV) video and non-spatial audio, often missing the spatial cues necessary for accurately representing sound sources in 3D environments. To address this limitation, we introduce a novel task, <strong>360V2SA</strong>, to generate spatial audio from 360-degree videos, specifically producing First-order Ambisonics (FOA) audio - a standard format for representing 3D spatial audio that captures sound directionality and enables realistic 3D audio reproduction. We first create <strong>Sphere360</strong>, a novel dataset tailored for this task that is curated from real-world data. We also design an efficient semi-automated pipeline for collecting and cleaning paired video-audio data. To generate spatial audio from 360-degree video, we propose a novel framework <strong>AudioSpace</strong>, which leverages self-supervised pre-training using both spatial audio data (in FOA format) and large-scale non-spatial data. Furthermore, AudioSpace features a dual-branch framework that utilizes both panoramic and FoV video inputs to capture comprehensive local and global information from 360-degree videos. Experimental results demonstrate that AudioSpace achieves state-of-the-art performance across both objective and subjective metrics on Sphere360.</p>
+    </div>
+    
+    <div class="video-carousel-section" style="text-align: center;">
+        <h2 class="chapter-title">360-Degree Demo Player</h2>
+        <hr class="chapter-line">
+        <div class="carousel-container" style="display: flex; justify-content: center; align-items: center; position: relative;">
+            <button id="prevBtn" onclick="moveCarousel(-1)" style="position: absolute; left: 10px;">&#8249;</button>
+            <div id="carousel" style="display: flex; justify-content: center; overflow: hidden; max-width: 900px;">
+                <!-- Video slots to be dynamically populated -->
+            </div>
+            <button id="nextBtn" onclick="moveCarousel(1)" style="position: absolute; right: 10px;">&#8250;</button>
+        </div>
+        <div id="video-id" class="caption" style="margin-top: 10px; font-weight: bold;"></div>
+    </div>
+    
+    <script>
+        // Array of WebM video paths for the carousel
+        const videoPaths = [
+            'videos_gen/G8pABGosD38l_17.webm',
+            'videos_gen/b1KhtJdiPkk_126.webm',
+            'videos_gen/9X2wM6HD_og_943.webm',
+        ];
+    
+        // Create a video player container with demo-player.html iframe
+        function createVideoPlayer(videoPath) {
+            const playerContainer = document.createElement('div');
+            playerContainer.className = 'video-player-container';
+    
+            // Add styles for the container, including a gray border
+            playerContainer.style.border = '2px solid gray';  // Add a gray border
+            playerContainer.style.padding = '10px';  // Optional: Add padding inside the border
+            playerContainer.style.borderRadius = '10px';  // Optional: Round the corners of the border
+            playerContainer.style.backgroundColor = '#f9f9f9';  // Optional: Add a light gray background inside the border
+    
+            const iframe = document.createElement('iframe');
+            iframe.src = `demo-player.html?videoPath=${encodeURIComponent(videoPath)}`;
+            iframe.width = '100%';
+            iframe.height = '100%';
+    
+            playerContainer.appendChild(iframe);
+            return playerContainer;
+        }
+    
+        // Populate the carousel with the first three videos initially
+        const carousel = document.getElementById('carousel');
+        const firstVideoPlayer = createVideoPlayer(videoPaths[0]);
+        const secondVideoPlayer = createVideoPlayer(videoPaths[1]);
+        carousel.appendChild(firstVideoPlayer);
+        carousel.appendChild(secondVideoPlayer);
+    
+        // Track the current index of the video being displayed
+        let currentIndex = 0;
+    
+        // Handle carousel movement (left or right)
+        function moveCarousel(direction) {
+            // Update the current index, allowing for wrap-around
+            currentIndex = (currentIndex + direction + videoPaths.length) % videoPaths.length;
+    
+            // Clear the carousel and add the new video players
+            carousel.innerHTML = ''; // Clear existing content
+    
+            // Create previous, current, and next video containers
+            const prevVideoIndex = (currentIndex - 1 + videoPaths.length) % videoPaths.length;
+            const nextVideoIndex = (currentIndex + 1) % videoPaths.length;
+    
+            const prevVideoPlayer = createVideoPlayer(videoPaths[prevVideoIndex]);
+            const currentVideoPlayer = createVideoPlayer(videoPaths[currentIndex]);
+            const nextVideoPlayer = createVideoPlayer(videoPaths[nextVideoIndex]);
+    
+            // Set the current video player in the middle
+            const videoWrapper = document.createElement('div');
+            videoWrapper.style.display = 'flex';
+            videoWrapper.style.justifyContent = 'center';
+            videoWrapper.style.position = 'relative';
+    
+            prevVideoPlayer.style.width = '50%';
+            nextVideoPlayer.style.width = '50%';
+            currentVideoPlayer.style.width = '100%';
+    
+            videoWrapper.appendChild(prevVideoPlayer);
+            videoWrapper.appendChild(currentVideoPlayer);
+            videoWrapper.appendChild(nextVideoPlayer);
+    
+            carousel.appendChild(videoWrapper);
+    
+            // Update the video ID caption below the current video
+            const videoIdElement = document.getElementById('video-id');
+            videoIdElement.innerText = `Video ID: ${videoPaths[currentIndex].split('/').pop().split('.')[0]}`;
+        }
+    
+        // Initialize the carousel
+        moveCarousel(0); // Initially populate the carousel with the first video set
+    </script>
+    
+    <!-- Image section -->
+    <div class="image-container">
+        <h2 class="chapter-title">Motivation</h2>
+        <hr class="chapter-line">
+        <div style="display: flex; justify-content: space-between; gap: 5px;"> <!-- Reduced gap from 20px to 10px -->
+            <div style="flex: 1; text-align: center;">
+            <img src="image/figure1-a.png" alt="Image 1" style="width: 100%; max-width: 440px;">
+            <div class="image-caption">(a) Comparison of panoramic video and perspective video.</div>
+            </div>
+            <div style="flex: 1; text-align: center;">
+            <img src="image/figure1-b.png" alt="Image 2" style="width: 100%; max-width: 440px;">
+            <div class="image-caption">(b) Comparison of stereo audio and FOA audio under head rotation.</div>
+            </div>
+        </div>
+        <div class="image-caption" style="text-align: center;">(a) shows the scene of a moving train that appears and gradually disappears in a panoramic view without being visible in the frontal perspective. (b) compares the audio localization before and after head rotation, illustrating how stereo audio fails to maintain sound localization while spatial audio (in FOA format) retains accurate positioning.</div>
+    </div>
+        <h2 class="chapter-title">Architecture</h2>
+        <hr class="chapter-line">
+        <img src="image/framework.png" alt="Image 2" style="width: 100%; max-width: 900px; margin-top: 20px;">
+        <div class="image-caption">A high-level overview of AudioSpace. The model leverages stereo and FOA audios for self-supervised pre-training using token masking. AudioSpace efficiently trains for conditional generation during fine-tuning, supported by robust panoramic video representation. DiT denotes Diffusion Transformer. </div>
+    </div>
+
+    <div class="intro" style="text-align: center;"></div>
+        <h2 class="chapter-title">Samples</h2>
+        <hr class="chapter-line">
+        <p style="text-align: left;">
+            The following presents a comparison between the ground truth (GT), the results generated by AudioSpace, and two baseline methods (MMAudio + AS and ViSAGe), with each video providing a different perspective on the 360-degree audio experience. The video ID format is "youtube id _ start time(s)", with each video segment lasting 10 seconds. FOA audio from these videos is decoded into binaural audio using <a href="https://github.com/GoogleChrome/omnitone" target="_blank">Omnitone</a>.
+            <br><br>
+            <strong>Please wear headphones and drag the screen to experience the 360-degree audio.</strong>
+        </p>
+    </div>
+
+    <div id="video-selector">
+
+
+    </div>
+    
+    <script>
+        const sections = [];
+    
+        function generateUI() {
+            const sectionContainer = document.getElementById('video-selector');
+            let interval = 2;
+            sectionContainer.innerHTML = "";  
+    
+            // Create a container for the fold buttons to be displayed in a row
+            const buttonContainer = document.createElement('div');
+            buttonContainer.className = 'button-container';
+            sectionContainer.appendChild(buttonContainer);
+    
+            // Create and display buttons in a row of five
+            sections.forEach((section, i) => {
+                if (i % interval === 0) {
+                    const foldButton = createFoldButton(i, interval);
+                    buttonContainer.appendChild(foldButton);
+    
+                    const sectionDiv = document.createElement('div');
+                    sectionDiv.className = 'sections';
+                    sectionDiv.style.display = 'none'; 
+    
+                    foldButton.onclick = () => toggleGroupVisibility(sectionDiv, i, i + interval);
+    
+                    sectionContainer.appendChild(sectionDiv);
+                }
+            });
+        }
+    
+        function createFoldButton(startIndex, interval) {
+            const foldButton = document.createElement('button');
+            foldButton.className = 'fold-btn';
+            foldButton.innerText = `Show/Hide Group ${Math.floor(startIndex / interval) + 1}`;
+            foldButton.style.borderRadius = '20px';
+            foldButton.style.padding = '10px 20px';
+            foldButton.style.fontFamily = 'Arial, sans-serif';
+            foldButton.style.fontWeight = 'bold';
+            foldButton.style.fontSize = '16px';
+            foldButton.style.backgroundColor = '#4CAF50';
+            foldButton.style.color = 'white';
+            foldButton.style.border = 'none';
+            foldButton.style.cursor = 'pointer';
+            foldButton.style.margin = '5px';
+    
+            foldButton.onmouseover = () => {
+                foldButton.style.backgroundColor = '#45a049';  // Hover effect
+            };
+            foldButton.onmouseout = () => {
+                foldButton.style.backgroundColor = '#4CAF50';  // Reset background color
+            };
+    
+            return foldButton;
+        }
+    
+        function toggleGroupVisibility(sectionDiv, startIndex, endIndex) {
+            const isHidden = sectionDiv.style.display === 'none';
+            if (isHidden) {
+                sectionDiv.style.display = 'block';
+                sectionDiv.innerHTML = '';  
+                sectionDiv.appendChild(generateSectionContent(startIndex, endIndex)); 
+            } else {
+                sectionDiv.style.display = 'none';
+            }
+        }
+    
+        function generateSectionContent(startIndex, endIndex) {
+            const sectionDiv = document.createElement('div');
+            sections.slice(startIndex, endIndex).forEach((section) => {
+                const sectionDivItem = document.createElement('div');
+                sectionDivItem.className = 'section';
+    
+                const sectionTitle = document.createElement('div');
+                sectionTitle.className = 'section-title';
+                sectionTitle.innerText = section.title;
+                sectionDivItem.appendChild(sectionTitle);
+    
+                section.cases.forEach((videoCase) => {
+                    const videoRow = document.createElement('div');
+                    videoRow.className = 'video-row';
+    
+                    const gtVideoPlayer = createVideoPlayer(videoCase.gt);
+                    const gtTitle = document.createElement('div');
+                    gtTitle.className = 'video-title';
+                    gtTitle.innerText = 'Ground Truth';
+    
+                    const gtColumn = document.createElement('div');
+                    gtColumn.className = 'video-column';
+                    gtColumn.appendChild(gtVideoPlayer);
+                    gtColumn.appendChild(gtTitle);
+    
+                    videoRow.appendChild(gtColumn);
+    
+                    videoCase.generated.forEach((prefix) => {
+                        const generatedVideoPath = `${prefix}${videoCase.caption}.webm`;
+                        const generatedVideoPlayer = createVideoPlayer(generatedVideoPath);
+    
+                        const generatedTitle = document.createElement('div');
+                        generatedTitle.className = 'video-title';
+                        generatedTitle.innerText = getGeneratedTitle(prefix);
+    
+                        const generatedColumn = document.createElement('div');
+                        generatedColumn.className = 'video-column';
+                        generatedColumn.appendChild(generatedVideoPlayer);
+                        generatedColumn.appendChild(generatedTitle);
+    
+                        videoRow.appendChild(generatedColumn);
+                    });
+    
+                    sectionDivItem.appendChild(videoRow);
+    
+                    const captionText = document.createElement('div');
+                    captionText.className = 'caption';
+                    captionText.innerText = 'Video ID: ' + videoCase.caption;
+    
+                    sectionDivItem.appendChild(captionText);
+                });
+    
+                sectionDiv.appendChild(sectionDivItem);
+            });
+    
+            return sectionDiv;
+        }
+    
+        function createVideoPlayer(videoPath) {
+            const playerContainer = document.createElement('div');
+            playerContainer.className = 'video-player-container';
+    
+            const iframe = document.createElement('iframe');
+            iframe.src = `demo-player.html?videoPath=${encodeURIComponent(videoPath)}`;
+    
+            const fullscreenButton = document.createElement('button');
+            fullscreenButton.className = 'fullscreen-btn';
+            fullscreenButton.innerText = 'Full Screen';
+            fullscreenButton.onclick = () => toggleFullscreen(playerContainer);
+    
+            playerContainer.appendChild(iframe);
+            playerContainer.appendChild(fullscreenButton);
+    
+            return playerContainer;
+        }
+    
+        function toggleFullscreen(playerContainer) {
+            if (!document.fullscreenElement) {
+                playerContainer.requestFullscreen().catch(err => console.log("Fullscreen failed", err));
+            } else {
+                document.exitFullscreen();
+            }
+        }
+    
+        function getGeneratedTitle(prefix) {
+            if (prefix === 'videos_gen/') return 'AudioSpace';
+            if (prefix === 'videos_mmaudio/') return 'MMAudio + AS';
+            if (prefix === 'videos_visage/') return 'ViSAGe';
+            return '';
+        }
+    
+        fetch('sections.json')  
+            .then(response => response.json())
+            .then(jsonData => {
+                for (const title in jsonData) {
+                    if (jsonData.hasOwnProperty(title)) {
+                        sections.push({
+                            title: title,
+                            cases: jsonData[title].map(caption => ({
+                                gt: `videos_gt/${caption}.webm`,
+                                generated: ['videos_gen/', 'videos_mmaudio/', 'videos_visage/'],
+                                caption: caption
+                            }))
+                        });
+                    }
+                }
+                console.log("Loaded sections:", sections);
+                generateUI();  
+            })
+            .catch(error => console.error("Error loading JSON:", error));
+    </script>
+    
+    
+
+
+    </div>
+        <h2 class="chapter-title"> Spectrograms</h2>
+        <hr class="chapter-line">
+        <img src="image/figure3.png" alt="Image 2" style="width: 100%; max-width: 900px; margin-top: 20px;">
+        <div class="image-caption">Qualitative Comparison. The first case on the left shows an agricultural machine moving behind, with the rectangular annotation indicating a decreasing trend in sound intensity in the GT audio. The second case on the right features a person playing a musical instrument. Since ViSAGe only generates 5-second audio, we concatenate the segments.</div>
+        <img src="image/appendix1.png" alt="Image 2" style="width: 100%; max-width: 900px; margin-top: 20px;">
+        <div class="image-caption">Additional Quantitative Results. This case shows a train passing by. The rectangular annotation indicates that the audio generated by our model continues to capture the sound of the train leaving the frontal perspective, even after it has passed, while the audio generated by other models almost entirely fades once the train moves out of the frontal view.</div>
+        <img src="image/appendix2.png" alt="Image 2" style="width: 100%; max-width: 900px; margin-top: 20px;">
+        <div class="image-caption">Additional Quantitative Results. The case on the left shows a continuous display of fireworks rising into the sky and exploding. The case on the right depicts several motorcycles chasing each other on a dirt road, with intense wind and engine sounds.</div>
+        <img src="image/appendix3.png" alt="Image 2" style="width: 100%; max-width: 900px; margin-top: 20px;">
+        <div class="image-caption">Additional Quantitative Results. The case on the left shows a camera mounted on a boat navigating through the waves, with the bow plunging into the water and splashing onto the screen. The case on the right shows the viewpoint moving through a noisy crowd in an indoor environment.</div>
+    
+    </div>
+
+
+
+</body>
+</html>
