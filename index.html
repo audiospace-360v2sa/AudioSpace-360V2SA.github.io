@@ -313,39 +313,46 @@
             foldButton.style.fontFamily = 'Arial, sans-serif';
             foldButton.style.fontWeight = 'bold';
             foldButton.style.fontSize = '16px';
-            foldButton.style.backgroundColor = '#4CAF50';
+            foldButton.style.backgroundColor = '#4CAF50';  
             foldButton.style.color = 'white';
             foldButton.style.border = 'none';
             foldButton.style.cursor = 'pointer';
             foldButton.style.margin = '5px';
-    
+
+            // Hover effect only works when button is green
             foldButton.onmouseover = () => {
-                foldButton.style.backgroundColor = '#45a049';  // Hover effect
-            };
-            foldButton.onmouseout = () => {
-                foldButton.style.backgroundColor = '#4CAF50';  // Reset background color
-            };
-            foldButton.onclick = () => {
-                // Toggle the color between green and gray
-                if (foldButton.style.backgroundColor === 'gray') {
-                    foldButton.style.backgroundColor = '#4CAF50';  // Return to green when clicked
-                } else {
-                    foldButton.style.backgroundColor = 'gray';  // Change to gray when clicked
+                if (foldButton.style.backgroundColor === 'rgb(76, 175, 80)') {  // Green color check
+                    foldButton.style.backgroundColor = '#45a049';  // Hover effect
                 }
             };
+
+            foldButton.onmouseout = () => {
+                if (foldButton.style.backgroundColor === 'rgb(69, 160, 73)') {  // Hovered green check
+                    foldButton.style.backgroundColor = '#4CAF50';  // Reset to green
+                }
+            };
+
             return foldButton;
         }
     
-        function toggleGroupVisibility(sectionDiv, startIndex, endIndex) {
+        function toggleGroupVisibility(sectionDiv, startIndex, endIndex, interval) {
             const isHidden = sectionDiv.style.display === 'none';
+            
+            const foldButton = document.querySelector(`.fold-btn:nth-child(${Math.floor(startIndex / interval) + 1})`);
+            
             if (isHidden) {
                 sectionDiv.style.display = 'block';
                 sectionDiv.innerHTML = '';  
-                sectionDiv.appendChild(generateSectionContent(startIndex, endIndex)); 
+                sectionDiv.appendChild(generateSectionContent(startIndex, endIndex));
+
+                foldButton.style.backgroundColor = '#D3D3D3'; 
             } else {
                 sectionDiv.style.display = 'none';
+
+                foldButton.style.backgroundColor = '#4CAF50'; 
             }
         }
+
     
         function generateSectionContent(startIndex, endIndex) {
             const sectionDiv = document.createElement('div');
