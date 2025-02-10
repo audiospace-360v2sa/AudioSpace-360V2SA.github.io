@@ -297,7 +297,7 @@
                     sectionDiv.className = 'sections';
                     sectionDiv.style.display = 'none'; 
     
-                    foldButton.onclick = () => toggleGroupVisibility(sectionDiv, i, i + interval);
+                    foldButton.onclick = () => toggleGroupVisibility(sectionDiv, i, i + interval,interval);
     
                     sectionContainer.appendChild(sectionDiv);
                 }
@@ -313,13 +313,12 @@
             foldButton.style.fontFamily = 'Arial, sans-serif';
             foldButton.style.fontWeight = 'bold';
             foldButton.style.fontSize = '16px';
-            foldButton.style.backgroundColor = '#4CAF50';  
+            foldButton.style.backgroundColor = '#4CAF50';
             foldButton.style.color = 'white';
             foldButton.style.border = 'none';
             foldButton.style.cursor = 'pointer';
             foldButton.style.margin = '5px';
-
-            // Hover effect only works when button is green
+    
             foldButton.onmouseover = () => {
                 if (foldButton.style.backgroundColor === 'rgb(76, 175, 80)') {  // Green color check
                     foldButton.style.backgroundColor = '#45a049';  // Hover effect
@@ -332,6 +331,7 @@
                 }
             };
 
+    
             return foldButton;
         }
     
@@ -347,10 +347,8 @@
             } else {
                 sectionDiv.style.display = 'none';
             }
-
             foldButton.style.backgroundColor = isHidden ? '#D3D3D3' : '#4CAF50';
         }
-
 
     
         function generateSectionContent(startIndex, endIndex) {
