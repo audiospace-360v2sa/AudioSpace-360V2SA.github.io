@@ -237,27 +237,62 @@
         // Initialize the carousel
         moveCarousel(0); // Initially populate the carousel with the first video set
     </script>
-    
+    <script>
+        window.onload = function() {
+          var figures = document.querySelectorAll('figure');
+          for (var i = 0; i < figures.length; i++) {
+            figures[i].id = 'fig' + (i + 1);
+            figures[i].querySelector('figcaption').innerHTML = 'Figure ' + (i + 1);
+          }
+          
+          var tables = document.querySelectorAll('table');
+          for (var j = 0; j < tables.length; j++) {
+            tables[j].id = 'table' + (j + 1);
+            var caption = tables[j].querySelector('caption');
+            if (caption) {
+              caption.innerHTML = 'Table ' + (j + 1);
+            }
+          }
+        };
+    </script>
     <!-- Image section -->
     <div class="image-container">
         <h2 class="chapter-title">Motivation</h2>
         <hr class="chapter-line">
-        <div style="display: flex; justify-content: space-between; gap: 5px;"> <!-- Reduced gap from 20px to 10px -->
-            <div style="flex: 1; text-align: center;">
-            <img src="image/figure1-a.png" alt="Image 1" style="width: 100%; max-width: 440px;">
-            <div class="image-caption">(a) Comparison of panoramic video and perspective video.</div>
-            </div>
-            <div style="flex: 1; text-align: center;">
-            <img src="image/figure1-b.png" alt="Image 2" style="width: 100%; max-width: 440px;">
-            <div class="image-caption">(b) Comparison of stereo audio and FOA audio under head rotation.</div>
-            </div>
+        <p style="text-align: left; font-size: 16px; color: #333;">
+            The rapid advancement of virtual reality and immersive technologies has significantly amplified the demand for realistic audio-visual experiences.
+            However, current video-to-audio methods typically generate non-spatial (mono or stereo) audio, which lacks essential directional information, and rely on limited perspective videos that miss crucial visual context. 
+            As illustrated in Figure <a href="#fig1">1-a</a>, panoramic videos capture a complete 360-degree view, enabling the simultaneous observation of all sound sources—such as a moving train—that remain invisible in frontal perspectives. 
+            Additionally, Figure <a href="#fig2">1-b</a> shows that stereo audio fails to maintain sound localization during head rotations, whereas spatial audio in First-order Ambisonics (FOA) retains accurate positioning. 
+            To address these limitations, we introduce 360V2SA, a novel task that generates FOA spatial audio directly from 360-degree videos, leveraging comprehensive visual information to enhance audio realism and immersion.
+        </p>
+        
+        <div style="display: flex; justify-content: space-between; gap: 5px;">
+            <figure id="fig1">
+                <div style="flex: 1; text-align: center;">
+                    <img src="image/figure1-a.png" alt="Image 1" style="width: 100%; max-width: 440px;">
+                    <div class="image-caption">(a) Comparison of panoramic video and perspective video.</div>
+                </div>
+            </figure>
+            <figure id="fig2">
+                <div style="flex: 1; text-align: center;">
+                    <img src="image/figure1-b.png" alt="Image 2" style="width: 100%; max-width: 440px;">
+                    <div class="image-caption">(b) Comparison of stereo audio and FOA audio under head rotation.</div>
+                </div>
+            </figure>
         </div>
-        <div class="image-caption" style="text-align: center;">(a) shows the scene of a moving train that appears and gradually disappears in a panoramic view without being visible in the frontal perspective. (b) compares the audio localization before and after head rotation, illustrating how stereo audio fails to maintain sound localization while spatial audio (in FOA format) retains accurate positioning.</div>
+        <div class="image-caption" style="text-align: center;">Figure 1. (a) shows the scene of a moving train that appears and gradually disappears in a panoramic view without being visible in the frontal perspective. (b) compares the audio localization before and after head rotation, illustrating how stereo audio fails to maintain sound localization while spatial audio (in FOA format) retains accurate positioning.</div>
     </div>
         <h2 class="chapter-title">Architecture</h2>
         <hr class="chapter-line">
-        <img src="image/framework.png" alt="Image 2" style="width: 100%; max-width: 900px; margin-top: 20px;">
-        <div class="image-caption">A high-level overview of AudioSpace. The model leverages stereo and FOA audios for self-supervised pre-training using token masking. AudioSpace efficiently trains for conditional generation during fine-tuning, supported by robust panoramic video representation. DiT denotes Diffusion Transformer. </div>
+        <p style="text-align: left; font-size: 16px; color: #333;">
+            As illustrated in Figure <a href="#fig3">2</a> , AudioSpace consists of two main stages: (1) we employ a coarse-to-fine self-supervised flow matching pre-training (Figure 2a) to alleviate the issue of data scarcity using both unlabeled spatial and non-spatial audio. 
+            (2) In the fine-tuning stage (Figure 2b), we perform spatial-aware supervised fine-tuning by utilizing a dual-branch video representation combined with a flow matching objective.
+        </p>
+        <figure id="fig3">
+            <img src="image/framework.png" alt="Image 2" style="width: 100%; max-width: 900px; margin-top: 20px;">
+            <div class="image-caption">Figure 2. A high-level overview of AudioSpace. The model leverages stereo and FOA audios for self-supervised pre-training using token masking. AudioSpace efficiently trains for conditional generation during fine-tuning, supported by robust panoramic video representation. DiT denotes Diffusion Transformer. </div>
+        </figure>
     </div>
 
     <div class="intro" style="text-align: center;"></div>
@@ -469,15 +504,23 @@
     </div>
         <h2 class="chapter-title"> Quantitative and Qualitative Results</h2>
         <hr class="chapter-line">
-        <img src="image/figure3.png" alt="Image 2" style="width: 100%; max-width: 900px; margin-top: 20px;">
-        <div class="image-caption">Qualitative Comparison. The first case on the left shows an agricultural machine moving behind, with the rectangular annotation indicating a decreasing trend in sound intensity in the GT audio. The second case on the right features a person playing a musical instrument. Since ViSAGe only generates 5-second audio, we concatenate the segments.</div>
-        <img src="image/appendix1.png" alt="Image 2" style="width: 100%; max-width: 900px; margin-top: 20px;">
-        <div class="image-caption">Additional Quantitative Results. This case shows a train passing by. The rectangular annotation indicates that the audio generated by our model continues to capture the sound of the train leaving the frontal perspective, even after it has passed, while the audio generated by other models almost entirely fades once the train moves out of the frontal view.</div>
-        <img src="image/appendix2.png" alt="Image 2" style="width: 100%; max-width: 900px; margin-top: 20px;">
-        <div class="image-caption">Additional Quantitative Results. The case on the left shows a continuous display of fireworks rising into the sky and exploding. The case on the right depicts several motorcycles chasing each other on a dirt road, with intense wind and engine sounds.</div>
-        <img src="image/appendix3.png" alt="Image 2" style="width: 100%; max-width: 900px; margin-top: 20px;">
-        <div class="image-caption">Additional Quantitative Results. The case on the left shows a camera mounted on a boat navigating through the waves, with the bow plunging into the water and splashing onto the screen. The case on the right shows the viewpoint moving through a noisy crowd in an indoor environment.</div>
-    
+        <figure id="fig4">
+            <img src="image/figure3.png" alt="Image 3" style="width: 100%; max-width: 900px; margin-top: 20px;">
+            <div class="image-caption">Figure 3. Qualitative Comparison. The first case on the left shows an agricultural machine moving behind, with the rectangular annotation indicating a decreasing trend in sound intensity in the GT audio. The second case on the right features a person playing a musical instrument. Since ViSAGe only generates 5-second audio, we concatenate the segments.</div>
+        </figure>
+        <figure id="fig5">
+            <img src="image/appendix1.png" alt="Image 4" style="width: 100%; max-width: 900px; margin-top: 20px;">
+            <div class="image-caption">Figure 4. Additional Quantitative Results. This case shows a train passing by. The rectangular annotation indicates that the audio generated by our model continues to capture the sound of the train leaving the frontal perspective, even after it has passed, while the audio generated by other models almost entirely fades once the train moves out of the frontal view.</div>
+        </figure>
+        <figure id="fig6">
+            <img src="image/appendix2.png" alt="Image 5" style="width: 100%; max-width: 900px; margin-top: 20px;">
+            <div class="image-caption">Figure 5. Additional Quantitative Results. The case on the left shows a continuous display of fireworks rising into the sky and exploding. The case on the right depicts several motorcycles chasing each other on a dirt road, with intense wind and engine sounds.</div>
+        </figure>
+        <figure id="fig7">
+            <img src="image/appendix3.png" alt="Image 6" style="width: 100%; max-width: 900px; margin-top: 20px;">
+            <div class="image-caption">Figure 6. Additional Quantitative Results. The case on the left shows a camera mounted on a boat navigating through the waves, with the bow plunging into the water and splashing onto the screen. The case on the right shows the viewpoint moving through a noisy crowd in an indoor environment.</div>
+        </figure>
+
     </div>
 
 
