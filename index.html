@@ -297,7 +297,7 @@
                     sectionDiv.className = 'sections';
                     sectionDiv.style.display = 'none'; 
     
-                    foldButton.onclick = () => toggleGroupVisibility(sectionDiv, i, i + interval);
+                    foldButton.onclick = () => toggleGroupVisibility(sectionDiv, i, i + interval,interval);
     
                     sectionContainer.appendChild(sectionDiv);
                 }
@@ -329,23 +329,24 @@
             return foldButton;
         }
     
-        function toggleGroupVisibility(sectionDiv, startIndex, endIndex) {
+        function toggleGroupVisibility(sectionDiv, startIndex, endIndex, interval) {
             const isHidden = sectionDiv.style.display === 'none';
             
-            const foldButton = document.querySelector(`.fold-btn:nth-child(${Math.floor(startIndex / 2) + 1})`);
+            const foldButton = document.querySelector(`.fold-btn:nth-child(${Math.floor(startIndex / interval) + 1})`);
             
             if (isHidden) {
                 sectionDiv.style.display = 'block';
                 sectionDiv.innerHTML = '';  
                 sectionDiv.appendChild(generateSectionContent(startIndex, endIndex));
 
-                foldButton.style.backgroundColor = '#D3D3D3';  
+                foldButton.style.backgroundColor = '#D3D3D3';  // 灰色
             } else {
                 sectionDiv.style.display = 'none';
 
-                foldButton.style.backgroundColor = '#4CAF50'; 
+                foldButton.style.backgroundColor = '#4CAF50';  // 恢复为绿色
             }
         }
+
     
         function generateSectionContent(startIndex, endIndex) {
             const sectionDiv = document.createElement('div');
