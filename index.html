@@ -320,11 +320,17 @@
             foldButton.style.margin = '5px';
     
             foldButton.onmouseover = () => {
-                foldButton.style.backgroundColor = '#45a049';  // Hover effect
+                if (foldButton.style.backgroundColor === 'rgb(76, 175, 80)') {  // Green color check
+                    foldButton.style.backgroundColor = '#45a049';  // Hover effect
+                }
             };
+
             foldButton.onmouseout = () => {
-                foldButton.style.backgroundColor = '#4CAF50';  // Reset background color
+                if (foldButton.style.backgroundColor === 'rgb(69, 160, 73)') {  // Hovered green check
+                    foldButton.style.backgroundColor = '#4CAF50';  // Reset to green
+                }
             };
+
     
             return foldButton;
         }
@@ -338,13 +344,10 @@
                 sectionDiv.style.display = 'block';
                 sectionDiv.innerHTML = '';  
                 sectionDiv.appendChild(generateSectionContent(startIndex, endIndex));
-
-                foldButton.style.backgroundColor = '#D3D3D3';  // 灰色
             } else {
                 sectionDiv.style.display = 'none';
-
-                foldButton.style.backgroundColor = '#4CAF50';  // 恢复为绿色
             }
+            foldButton.style.backgroundColor = isHidden ? '#D3D3D3' : '#4CAF50';
         }
 
     
