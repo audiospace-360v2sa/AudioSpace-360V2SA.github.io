@@ -130,6 +130,30 @@
             color: #555;
             margin-top: 10px;
         }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        caption {
+            caption-side: bottom; 
+            font-weight: bold;
+            margin-top: 10px; 
+        }
+        th, td {
+            padding: 8px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .image-caption {
+            font-style: italic;
+            text-align: center;
+        }
         
         
     </style>
@@ -504,6 +528,240 @@
     </div>
         <h2 class="chapter-title"> Quantitative and Qualitative Results</h2>
         <hr class="chapter-line">
+        <!-- Table 1: Performance Comparison -->
+        <table id="table1">
+            <thead>
+                <tr>
+                    <th>Model</th>
+                    <th>Dataset</th>
+                    <th>FD↓</th>
+                    <th>KL↓</th>
+                    <th>Δ<sub>abs</sub>θ↓</th>
+                    <th>Δ<sub>abs</sub>φ↓</th>
+                    <th>Δ<sub>Angular</sub>↓</th>
+                    <th>MOS-SQ↑</th>
+                    <th>MOS-AF↑</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>GT</td>
+                    <td>YT360-Test</td>
+                    <td>/</td>
+                    <td>/</td>
+                    <td>/</td>
+                    <td>/</td>
+                    <td>/</td>
+                    <td>85.38±0.95</td>
+                    <td>87.85±1.21</td>
+                </tr>
+                <tr>
+                    <td>Diff-Foley + AS</td>
+                    <td>YT360-Test</td>
+                    <td>361.65</td>
+                    <td>2.22</td>
+                    <td>/</td>
+                    <td>/</td>
+                    <td>/</td>
+                    <td>67.21±0.95</td>
+                    <td>70.34±1.76</td>
+                </tr>
+                <tr>
+                    <td>MMAudio + AS</td>
+                    <td>YT360-Test</td>
+                    <td>190.40</td>
+                    <td>1.51</td>
+                    <td>/</td>
+                    <td>/</td>
+                    <td>/</td>
+                    <td>73.25±1.05</td>
+                    <td>76.77±1.23</td>
+                </tr>
+                <tr>
+                    <td>ViSAGe (FOV)</td>
+                    <td>YT360-Test</td>
+                    <td>199.09</td>
+                    <td>1.86</td>
+                    <td>2.21</td>
+                    <td>0.88</td>
+                    <td>1.99</td>
+                    <td>71.82±1.98</td>
+                    <td>72.17±1.47</td>
+                </tr>
+                <tr>
+                    <td>ViSAGe (360)</td>
+                    <td>YT360-Test</td>
+                    <td>225.52</td>
+                    <td>1.95</td>
+                    <td>2.18</td>
+                    <td>0.86</td>
+                    <td>1.98</td>
+                    <td>72.45±1.64</td>
+                    <td>72.96±1.39</td>
+                </tr>
+                <tr>
+                    <td><strong>AudioSpace</strong></td>
+                    <td>YT360-Test</td>
+                    <td><strong>92.57</strong></td>
+                    <td><strong>1.64</strong></td>
+                    <td><strong>1.27</strong></td>
+                    <td><strong>1.53</strong></td>
+                    <td><strong>1.27</strong></td>
+                    <td><strong>80.37±0.91</strong></td>
+                    <td><strong>83.49±1.01</strong></td>
+                </tr>
+                <tr>
+                    <td>GT</td>
+                    <td>Sphere360-Bench</td>
+                    <td>/</td>
+                    <td>/</td>
+                    <td>/</td>
+                    <td>/</td>
+                    <td>/</td>
+                    <td>88.41±0.79</td>
+                    <td>90.12±1.08</td>
+                </tr>
+                <tr>
+                    <td>Diff-Foley + AS</td>
+                    <td>Sphere360-Bench</td>
+                    <td>331.05</td>
+                    <td>3.56</td>
+                    <td>/</td>
+                    <td>/</td>
+                    <td>/</td>
+                    <td>69.87±0.84</td>
+                    <td>71.12±1.36</td>
+                </tr>
+                <tr>
+                    <td>MMAudio + AS</td>
+                    <td>Sphere360-Bench</td>
+                    <td>271.15</td>
+                    <td>2.39</td>
+                    <td>/</td>
+                    <td>/</td>
+                    <td>/</td>
+                    <td>75.34±0.99</td>
+                    <td>77.56±1.22</td>
+                </tr>
+                <tr>
+                    <td>ViSAGe (FOV)</td>
+                    <td>Sphere360-Bench</td>
+                    <td>210.87</td>
+                    <td>2.90</td>
+                    <td>1.51</td>
+                    <td>0.71</td>
+                    <td>1.49</td>
+                    <td>73.45±1.42</td>
+                    <td>74.89±1.71</td>
+                </tr>
+                <tr>
+                    <td>ViSAGe (360)</td>
+                    <td>Sphere360-Bench</td>
+                    <td>219.66</td>
+                    <td>2.96</td>
+                    <td>1.52</td>
+                    <td>0.74</td>
+                    <td>1.51</td>
+                    <td>74.12±1.18</td>
+                    <td>75.34±1.03</td>
+                </tr>
+                <tr>
+                    <td><strong>AudioSpace</strong></td>
+                    <td>Sphere360-Bench</td>
+                    <td><strong>88.30</strong></td>
+                    <td><strong>1.58</strong></td>
+                    <td><strong>1.36</strong></td>
+                    <td><strong>0.52</strong></td>
+                    <td><strong>1.28</strong></td>
+                    <td><strong>84.67±1.06</strong></td>
+                    <td><strong>87.23±0.98</strong></td>
+                </tr>
+            </tbody>
+            <caption>Table 1. Performance comparison between AudioSpace and the baselines on the Sphere360-Bench test set and YT360 test set. We use objective metrics computing <strong>FD</strong>, <strong>KL divergence</strong>, Δ<sub>abs</sub>θ, Δ<sub>abs</sub>φ, and Δ<sub>Angular</sub> between estimated DoA and ground truth, as well as subjective metrics including MOS for spatial audio quality (<strong>MOS-SQ</strong>) and video-audio alignment faithfulness (<strong>MOS-AF</strong>). We report the mean and standard deviation for MOS-SQ and MOS-AF. <strong>+AS</strong> denotes adding an audio spatialization component. For metrics with a downward arrow (↓), lower values represent better performance, while for metrics with an upward arrow (↑), higher values indicate better quality.</caption>
+        </table>
+
+        <!-- Table 2: Transformer Configurations -->
+        <table id="table2">
+            <thead>
+                <tr>
+                    <th>Model Scale</th>
+                    <th>Embedding Dimension</th>
+                    <th>Depth</th>
+                    <th>Attention Heads</th>
+                    <th>Condition Token Dimension</th>
+                    <th>Global Condition Dimension</th>
+                    <th>Total Parameters</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Large</td>
+                    <td>1536</td>
+                    <td>24</td>
+                    <td>24</td>
+                    <td>768</td>
+                    <td>1536</td>
+                    <td>1.2B</td>
+                </tr>
+                <tr>
+                    <td>Medium</td>
+                    <td>1024</td>
+                    <td>16</td>
+                    <td>16</td>
+                    <td>512</td>
+                    <td>1024</td>
+                    <td>472M</td>
+                </tr>
+                <tr>
+                    <td>Small</td>
+                    <td>768</td>
+                    <td>12</td>
+                    <td>12</td>
+                    <td>384</td>
+                    <td>768</td>
+                    <td>291M</td>
+                </tr>
+            </tbody>
+            <caption>Table 2. Diffusion Transformer Configurations at Different Model Size.</caption>
+        </table>
+
+        <!-- Table 3: VAE Results -->
+        <table id="table3">
+            <thead>
+                <tr>
+                    <th>Model</th>
+                    <th>STFT Distance↓</th>
+                    <th>MEL Distance↓</th>
+                    <th>FD↓</th>
+                    <th>KL↓</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Ours</td>
+                    <td>0.82</td>
+                    <td><strong>1.48</strong></td>
+                    <td><strong>94.15</strong></td>
+                    <td><strong>0.31</strong></td>
+                </tr>
+                <tr>
+                    <td>Descript-Audio-Codec</td>
+                    <td><strong>0.71</strong></td>
+                    <td>4.74</td>
+                    <td>123.41</td>
+                    <td>0.62</td>
+                </tr>
+                <tr>
+                    <td>Non-Spatial Audio VAE</td>
+                    <td>4.12</td>
+                    <td>6.65</td>
+                    <td>272.89</td>
+                    <td>2.12</td>
+                </tr>
+            </tbody>
+            <caption>Table 3. Performance of VAE model in terms of STFT and MEL distances. For metrics with a downward arrow (↓), lower values represent better performance.</caption>
+        </table>
+
         <figure id="fig4">
             <img src="image/figure3.png" alt="Image 3" style="width: 100%; max-width: 900px; margin-top: 20px;">
             <div class="image-caption">Figure 3. Qualitative Comparison. The first case on the left shows an agricultural machine moving behind, with the rectangular annotation indicating a decreasing trend in sound intensity in the GT audio. The second case on the right features a person playing a musical instrument. Since ViSAGe only generates 5-second audio, we concatenate the segments.</div>
