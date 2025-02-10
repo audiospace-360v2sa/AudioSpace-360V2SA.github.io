@@ -284,7 +284,7 @@
     <div class="image-container">
         <h2 class="chapter-title">Motivation</h2>
         <hr class="chapter-line">
-        <p style="text-align: left; font-size: 16px; color: #333;">
+        <p style="text-align: left; font-size: 16px; max-width: 96%; color: #333;">
             The rapid advancement of virtual reality and immersive technologies has significantly amplified the demand for realistic audio-visual experiences.
             However, current video-to-audio methods typically generate non-spatial (mono or stereo) audio, which lacks essential directional information, and rely on limited perspective videos that miss crucial visual context. 
             As illustrated in Figure <a href="#fig1">1-a</a>, panoramic videos capture a complete 360-degree view, enabling the simultaneous observation of all sound sources—such as a moving train—that remain invisible in frontal perspectives. 
@@ -315,7 +315,7 @@
             (2) In the fine-tuning stage (Figure 2b), we perform spatial-aware supervised fine-tuning by utilizing a dual-branch video representation combined with a flow matching objective.
         </p>
         <figure id="fig3">
-            <img src="image/framework_new.png" alt="Image 2" style="width: 100%; max-width: 900px; margin-top: 20px;">
+            <img src="image/framework.png" alt="Image 2" style="width: 100%; max-width: 900px; margin-top: 20px;">
             <div class="image-caption">Figure 2. A high-level overview of AudioSpace. The model leverages stereo and FOA audios for self-supervised pre-training using token masking. AudioSpace efficiently trains for conditional generation during fine-tuning, supported by robust panoramic video representation. DiT denotes Diffusion Transformer. </div>
         </figure>
     </div>
