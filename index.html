@@ -571,67 +571,157 @@
             .catch(error => console.error("Error loading JSON:", error));
     </script>
     
-    <div class="intro" style="text-align: center;"></div>
+
+
+    <div class="video-carousel-section" style="text-align: center;">
         <h2 class="chapter-title">Scene Transition Cases</h2>
         <hr class="chapter-line">
-        <p style="text-align: left;">
-            We used single-scene videos, paired them into groups, and spliced 5-second segments into 10-second clips with abrupt transitions to evaluate whether the model can better handle sudden changes in the scene.
-            <br><br>
-        </p> 
+        <strong style="font-size: 19px; display: block; margin-bottom: 20px;">We used single-scene videos, paired them into groups, and spliced 5-second segments into 10-second clips with abrupt transitions to evaluate whether the model can better handle sudden changes in the scene. </strong>
+        <div class="carousel-container" style="display: flex; justify-content: center; align-items: center; position: relative;">
+            <button id="prevBtn" onclick="moveCarousel(-1)" style="position: absolute; left: 10px;">&#8249;</button>
+            <div id="carousel" style="display: flex; justify-content: center; overflow: hidden; max-width: 900px;">
+                <!-- Video slots to be dynamically populated -->
+            </div>
+            <button id="nextBtn" onclick="moveCarousel(1)" style="position: absolute; right: 10px;">&#8250;</button>
+        </div>
+        <div id="video-id" class="caption" style="margin-top: 10px; font-weight: bold;"></div>
     </div>
-
+    
     <script>
-    function addSceneTransitionSection() {
-    const sectionContainer = document.getElementById('video-selector');
-    
-    // Create the new section container
-    const sectionDiv = document.createElement('div');
-    sectionDiv.className = 'sections';
-    sectionDiv.style.display = 'block'; // Always visible
-    
-    // Create the section title
-    const sectionTitle = document.createElement('div');
-    sectionTitle.className = 'section-title';
-    sectionTitle.innerText = 'Transition';
-    sectionDiv.appendChild(sectionTitle);
-    
-    // Create the video row
-    const videoRow = document.createElement('div');
-    videoRow.className = 'video-row';
-    
-    // Here you can specify your four video paths
-    const videoPaths = [
-        'videos_trans/p5Ady9RJyhU_110+M8AHmUYaYbI_140.webm',
-        'videos_trans/6DHUZ1Jt4wo_320+VvXNTF68hdE_230.webm',
-        'videos_trans/Fq8kqMmSl-c_160+oOLW1t9vpVQ_490.webm',
-        'videos_trans/u-Hpf2_wzB8_240+6DHUZ1Jt4wo_210.webm'
-    ];
-    // Create four video players
-    videoPaths.forEach((path, index) => {
-        const videoPlayer = createVideoPlayer(path);
-        
-        const title = document.createElement('div');
-        title.className = 'video-title';
-        title.innerText = `Video ${index + 1}`; // You can customize the titles
-        
-        const column = document.createElement('div');
-        column.className = 'video-column';
-        column.appendChild(videoPlayer);
-        column.appendChild(title);
-        
-        videoRow.appendChild(column);
-    });
-    
-    sectionDiv.appendChild(videoRow);
-    sectionContainer.appendChild(sectionDiv);
-}
+        // Array of WebM video paths for the carousel
+        const videoPaths1 = [
+            'video_trans/p5Ady9RJyhU_110+M8AHmUYaYbI_140.webm',
+            'video_trans/6DHUZ1Jt4wo_320+VvXNTF68hdE_230.webm',
+            'video_trans/Fq8kqMmSl-c_160+oOLW1t9vpVQ_490.webm',
+            'video_trans/u-Hpf2_wzB8_240+6DHUZ1Jt4wo_210.webm'，
+        ];
 
-// Add this line at the end of your fetch().then() chain, right before the catch:
-.then(() => {
-    generateUI();
-    addSceneTransitionSection(); // Add this line to call the new function
-})
-</script>
+        let currentIndex1 = 0;  
+
+        // Create a video player container with demo-player.html iframe
+        function createVideoPlayer2(videoPath1, isMain1) {
+            const playerContainer1 = document.createElement('div');
+            playerContainer1.className = 'video-player-container';
+            playerContainer1.style.position = 'relative';
+            
+            // Add styles for the container
+            playerContainer1.style.border = '2px solid gray';
+            playerContainer1.style.padding = '10px';
+            playerContainer1.style.borderRadius = '10px';
+            playerContainer1.style.backgroundColor = '#f9f9f9';
+
+            // Initially, use a canvas to show the first frame of the video
+            const thumbnailCanvas1 = document.createElement('canvas');
+            const thumbnailContext1 = thumbnailCanvas1.getContext('2d');
+            thumbnailCanvas1.width = 320;  // Set desired width for the thumbnail
+            thumbnailCanvas1.height = 180; // Set desired height for the thumbnail
+
+            const videoElement1 = document.createElement('video');
+            videoElement1.src = videoPath1;
+            videoElement1.preload = 'metadata'; // Preload metadata to get the first frame
+
+            videoElement1.onloadedmetadata = function() {
+                // Once the metadata is loaded, we can draw the first frame on the canvas
+                videoElement1.currentTime = 0;
+                videoElement1.onseeked = function() {
+                    thumbnailContext1.drawImage(videoElement1, 0, 0, thumbnailCanvas1.width, thumbnailCanvas1.height);
+                };
+            };
+
+            // If it's the main (center) video, create an iframe for playing
+            if (isMain1) {
+                const iframe1 = document.createElement('iframe');
+                iframe1.src = `demo-player.html?videoPath=${encodeURIComponent(videoPath1)}`;
+                iframe1.width = '100%';
+                iframe1.height = '100%';
+                iframe1.style.border = 'none';
+                playerContainer1.appendChild(iframe1);
+            } else {
+                // For the side videos, show the first frame centered within the container
+                playerContainer1.style.display = 'flex';
+                playerContainer1.style.alignItems = 'center';  // Vertically center the thumbnail
+                playerContainer1.style.justifyContent = 'center';  // Horizontally center the thumbnail
+                playerContainer1.style.overflow = 'hidden';  // Hide any overflowing content
+                playerContainer1.appendChild(thumbnailCanvas1);
+            }
+
+            // Remove the fullscreen button for side videos
+            if (isMain1) {
+                const fullscreenBtn = document.createElement('button');
+                fullscreenBtn.innerHTML = '⛶';
+                fullscreenBtn.style.position = 'absolute';
+                fullscreenBtn.style.top = '10px';
+                fullscreenBtn.style.right = '10px';
+                fullscreenBtn.style.padding = '10px';
+                fullscreenBtn.style.fontSize = '20px';
+                fullscreenBtn.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+                fullscreenBtn.style.color = 'white';
+                fullscreenBtn.style.border = 'none';
+                fullscreenBtn.style.borderRadius = '50%';
+                fullscreenBtn.style.cursor = 'pointer';
+
+                fullscreenBtn.addEventListener('click', function() {
+                    if (!document.fullscreenElement) {
+                        playerContainer1.requestFullscreen();
+                    } else {
+                        document.exitFullscreen();
+                    }
+                });
+
+                playerContainer1.appendChild(fullscreenBtn);
+            }
+
+            return playerContainer1;
+        }
+
+        // Populate the carousel with the first three videos initially
+        const carousel1 = document.getElementById('carousel');
+        const firstVideoPlayer1 = createVideoPlayer2(videoPaths1[currentIndex1], true);
+        const secondVideoPlayer1 = createVideoPlayer2(videoPaths1[(currentIndex1 + 1) % videoPaths1.length], false);
+        const thirdVideoPlayer1 = createVideoPlayer2(videoPaths1[(currentIndex1 + 2) % videoPaths1.length], false);
+        carousel1.appendChild(firstVideoPlayer1);
+        carousel1.appendChild(secondVideoPlayer1);
+        carousel1.appendChild(thirdVideoPlayer1);
+
+        function moveCarousel(direction) {
+            // Update the current index, allowing for wrap-around
+            currentIndex1 = (currentIndex1 + direction + videoPaths1.length) % videoPaths1.length;
+
+            const videoWrapper1 = document.createElement('div');
+            videoWrapper1.style.display = 'flex';
+            videoWrapper1.style.justifyContent = 'center';
+            videoWrapper1.style.position = 'relative';
+
+            const prevVideoIndex1 = (currentIndex1 - 1 + videoPaths.length) % videoPaths.length;
+            const nextVideoIndex1 = (currentIndex1 + 1) % videoPaths.length;
+
+            const prevVideoPlayer1 = createVideoPlayer2(videoPaths1[prevVideoIndex1], false);
+            const currentVideoPlayer1 = createVideoPlayer2(videoPaths1[currentIndex1], true);
+            const nextVideoPlayer1 = createVideoPlayer2(videoPaths1[nextVideoIndex1], false);
+
+            // Set the current video player in the middle
+            prevVideoPlayer1.style.width = '35%';
+            nextVideoPlayer1.style.width = '35%';
+            currentVideoPlayer1.style.width = '100%';
+            prevVideoPlayer1.style.marginRight = '10px';
+            nextVideoPlayer1.style.marginLeft = '10px';
+
+            videoWrapper1.appendChild(prevVideoPlayer);
+            videoWrapper1.appendChild(currentVideoPlayer);
+            videoWrapper1.appendChild(nextVideoPlayer);
+
+            carousel1.innerHTML = ''; // Clear the carousel and append the new video wrapper
+            carousel1.appendChild(videoWrapper1);
+
+            const videoIdElement1 = document.getElementById('video-id');
+            videoIdElement1.innerText = ``;
+        }
+
+        // Initialize the carousel
+        moveCarousel(0);
+
+
+    </script>
 
     </div>
         <h2 class="chapter-title"> Quantitative and Qualitative Results</h2>
