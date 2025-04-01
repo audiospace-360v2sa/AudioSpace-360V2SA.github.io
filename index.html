@@ -580,6 +580,58 @@
         </p> 
     </div>
 
+    <script>
+    function addSceneTransitionSection() {
+    const sectionContainer = document.getElementById('video-selector');
+    
+    // Create the new section container
+    const sectionDiv = document.createElement('div');
+    sectionDiv.className = 'sections';
+    sectionDiv.style.display = 'block'; // Always visible
+    
+    // Create the section title
+    const sectionTitle = document.createElement('div');
+    sectionTitle.className = 'section-title';
+    sectionTitle.innerText = 'Scene Transition Cases';
+    sectionDiv.appendChild(sectionTitle);
+    
+    // Create the video row
+    const videoRow = document.createElement('div');
+    videoRow.className = 'video-row';
+    
+    // Here you can specify your four video paths
+    const videoPaths = [
+        'videos_trans/p5Ady9RJyhU_110+M8AHmUYaYbI_140.webm',
+        'videos_trans/6DHUZ1Jt4wo_320+VvXNTF68hdE_230.webm',
+        'videos_trans/Fq8kqMmSl-c_160+oOLW1t9vpVQ_490.webm',
+        'videos_trans/u-Hpf2_wzB8_240+6DHUZ1Jt4wo_210.webm'
+    ];
+    // Create four video players
+    videoPaths.forEach((path, index) => {
+        const videoPlayer = createVideoPlayer(path);
+        
+        const title = document.createElement('div');
+        title.className = 'video-title';
+        title.innerText = `Video ${index + 1}`; // You can customize the titles
+        
+        const column = document.createElement('div');
+        column.className = 'video-column';
+        column.appendChild(videoPlayer);
+        column.appendChild(title);
+        
+        videoRow.appendChild(column);
+    });
+    
+    sectionDiv.appendChild(videoRow);
+    sectionContainer.appendChild(sectionDiv);
+}
+
+// Add this line at the end of your fetch().then() chain, right before the catch:
+.then(() => {
+    generateUI();
+    addSceneTransitionSection(); // Add this line to call the new function
+})
+</script>
 
     </div>
         <h2 class="chapter-title"> Quantitative and Qualitative Results</h2>
