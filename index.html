@@ -571,105 +571,66 @@
             .catch(error => console.error("Error loading JSON:", error));
     </script>
     
-    <div id="video-selector" class="video-selector">
-    <div class="intro" style="text-align: center;">
+    <div class="intro" style="text-align: center;"></div>
         <h2 class="chapter-title">Scene Transition Cases</h2>
         <hr class="chapter-line">
         <p style="text-align: left;">
             We used single-scene videos, paired them into groups, and spliced 5-second segments into 10-second clips with abrupt transitions to evaluate whether the model can better handle sudden changes in the scene.
             <br><br>
-        </p>
+        </p> 
     </div>
-</div>
 
-<style>
-    .chapter-title {
-        font-size: 28px;
-        color: #333;
-        margin: 30px 0 20px 0;
-    }
-    
-    .chapter-line {
-        border: none;
-        height: 2px;
-        background-color: #333;
-        width: 80%;
-        margin: 20px auto;
-    }
-    
-    .intro p {
-        max-width: 800px;
-        margin: 0 auto;
-        line-height: 1.6;
-        font-size: 16px;
-        color: #444;
-    }
-</style>
-
-<script>
-    const sections = [];
-    
+    <script>
     function addSceneTransitionSection() {
-        const sectionContainer = document.getElementById('video-selector');
+    const sectionContainer = document.getElementById('video-selector');
+    
+    // Create the new section container
+    const sectionDiv = document.createElement('div');
+    sectionDiv.className = 'sections';
+    sectionDiv.style.display = 'block'; // Always visible
+    
+    // Create the section title
+    const sectionTitle = document.createElement('div');
+    sectionTitle.className = 'section-title';
+    sectionTitle.innerText = 'Transition';
+    sectionDiv.appendChild(sectionTitle);
+    
+    // Create the video row
+    const videoRow = document.createElement('div');
+    videoRow.className = 'video-row';
+    
+    // Here you can specify your four video paths
+    const videoPaths = [
+        'videos_trans/p5Ady9RJyhU_110+M8AHmUYaYbI_140.webm',
+        'videos_trans/6DHUZ1Jt4wo_320+VvXNTF68hdE_230.webm',
+        'videos_trans/Fq8kqMmSl-c_160+oOLW1t9vpVQ_490.webm',
+        'videos_trans/u-Hpf2_wzB8_240+6DHUZ1Jt4wo_210.webm'
+    ];
+    // Create four video players
+    videoPaths.forEach((path, index) => {
+        const videoPlayer = createVideoPlayer(path);
         
-        // Create the video section container
-        const sectionDiv = document.createElement('div');
-        sectionDiv.className = 'sections';
-        sectionDiv.style.display = 'block';
+        const title = document.createElement('div');
+        title.className = 'video-title';
+        title.innerText = `Video ${index + 1}`; // You can customize the titles
         
-        // Create the video row
-        const videoRow = document.createElement('div');
-        videoRow.className = 'video-row';
+        const column = document.createElement('div');
+        column.className = 'video-column';
+        column.appendChild(videoPlayer);
+        column.appendChild(title);
         
-        // Video paths
-        const videoPaths = [
-            'videos_trans/p5Ady9RJyhU_110+M8AHmUYaYbI_140.webm',
-            'videos_trans/6DHUZ1Jt4wo_320+VvXNTF68hdE_230.webm',
-            'videos_trans/Fq8kqMmSl-c_160+oOLW1t9vpVQ_490.webm',
-            'videos_trans/u-Hpf2_wzB8_240+6DHUZ1Jt4wo_210.webm'
-        ];
-        
-        // Create four video players
-        videoPaths.forEach((path, index) => {
-            const videoPlayer = createVideoPlayer(path);
-            
-            const title = document.createElement('div');
-            title.className = 'video-title';
-            title.innerText = `Transition ${index + 1}`;
-            
-            const column = document.createElement('div');
-            column.className = 'video-column';
-            column.appendChild(videoPlayer);
-            column.appendChild(title);
-            
-            videoRow.appendChild(column);
-        });
-        
-        sectionDiv.appendChild(videoRow);
-        sectionContainer.appendChild(sectionDiv);
-    }
+        videoRow.appendChild(column);
+    });
+    
+    sectionDiv.appendChild(videoRow);
+    sectionContainer.appendChild(sectionDiv);
+}
 
-    // 修改fetch部分的代码
-    fetch('sections.json')
-        .then(response => response.json())
-        .then(jsonData => {
-            for (const title in jsonData) {
-                if (jsonData.hasOwnProperty(title)) {
-                    sections.push({
-                        title: title,
-                        cases: jsonData[title].map(caption => ({
-                            gt: `videos_gt/${caption}.webm`,
-                            generated: ['videos_gen/', 'videos_mmaudio/', 'videos_visage/'],
-                            caption: caption
-                        }))
-                    });
-                }
-            }
-            console.log("Loaded sections:", sections);
-            generateUI();
-            addSceneTransitionSection(); // 确保这个函数在generateUI()之后调用
-        })
-        .catch(error => console.error("Error loading JSON:", error));
+// Add this line at the end of your fetch().then() chain, right before the catch:
+.then(() => {
+    generateUI();
+    addSceneTransitionSection(); // Add this line to call the new function
+})
 </script>
 
     </div>
