@@ -729,7 +729,119 @@
             <caption>Table 1. Performance comparison between AudioSpace and the baselines on the Sphere360-Bench test set and YT360 test set. We use objective metrics computing <strong>FD</strong>, <strong>KL divergence</strong>, Δ<sub>abs</sub>θ, Δ<sub>abs</sub>φ, and Δ<sub>Angular</sub> between estimated DoA and ground truth, as well as subjective metrics including MOS for spatial audio quality (<strong>MOS-SQ</strong>) and video-audio alignment faithfulness (<strong>MOS-AF</strong>). We report the mean and standard deviation for MOS-SQ and MOS-AF. <strong>+AS</strong> denotes adding an audio spatialization component. For metrics with a downward arrow (↓), lower values represent better performance, while for metrics with an upward arrow (↑), higher values indicate better quality.</caption>
         </table>
 
-        
+        <div>
+            <h2 class="chapter-title">Effect of Self-supervised Pre-training</h2>
+            <hr class="chapter-line">
+            <table id="table2">
+                <thead>
+                    <tr>
+                        <th>Model</th>
+                        <th>FD↓</th>
+                        <th>KL↓</th>
+                        <th>Δ<sub>abs</sub>θ↓</th>
+                        <th>Δ<sub>abs</sub>φ↓</th>
+                        <th>Δ<sub>Angular</sub>↓</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>coarse-to-fine</td>
+                        <td><strong>88.30</strong></td>
+                        <td><strong>1.58</strong></td>
+                        <td><strong>1.36</strong></td>
+                        <td><strong>0.52</strong></td>
+                        <td><strong>1.28</strong></td>
+                    </tr>
+                    <tr>
+                        <td>w/ fine</td>
+                        <td>97.57</td>
+                        <td>1.82</td>
+                        <td>1.36</td>
+                        <td>0.57</td>
+                        <td>1.28</td>
+                    </tr>
+                    <tr>
+                        <td>w/ coarse</td>
+                        <td>97.26</td>
+                        <td>1.78</td>
+                        <td>1.36</td>
+                        <td>0.66</td>
+                        <td>1.30</td>
+                    </tr>
+                    <tr>
+                        <td>w/o PT</td>
+                        <td>104.57</td>
+                        <td>1.83</td>
+                        <td>1.39</td>
+                        <td>0.58</td>
+                        <td>1.32</td>
+                    </tr>
+                </tbody>
+            </table>
+            <caption>Table 2. Effect of Self-supervised Pre-training on various metrics: FD, KL, Δ<sub>abs</sub>θ, Δ<sub>abs</sub>φ, and Δ<sub>Angular</sub>. The arrows indicate that lower values are preferred for these metrics.</caption>
+        </div>
+
+    
+        <div>
+            <h2 class="chapter-title">Effect of the Dual-branch Design</h2>
+            <hr class="chapter-line">
+            <table id="table3">
+                <thead>
+                    <tr>
+                        <th>Model</th>
+                        <th>FD↓</th>
+                        <th>KL↓</th>
+                        <th>Δ<sub>abs</sub>θ↓</th>
+                        <th>Δ<sub>abs</sub>φ↓</th>
+                        <th>Δ<sub>Angular</sub>↓</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>ERP+FOV</td>
+                        <td><strong>88.30</strong></td>
+                        <td><strong>1.58</strong></td>
+                        <td>1.36</td>
+                        <td><strong>0.52</strong></td>
+                        <td><strong>1.28</strong></td>
+                    </tr>
+                    <tr>
+                        <td>EAC+FOV</td>
+                        <td>89.89</td>
+                        <td>1.66</td>
+                        <td><strong>1.33</strong></td>
+                        <td>0.55</td>
+                        <td>1.29</td>
+                    </tr>
+                    <tr>
+                        <td>w/ FOV only</td>
+                        <td>88.80</td>
+                        <td>1.87</td>
+                        <td>1.41</td>
+                        <td>0.59</td>
+                        <td>1.33</td>
+                    </tr>
+                    <tr>
+                        <td>w/ EAC only</td>
+                        <td>93.37</td>
+                        <td>1.84</td>
+                        <td>1.37</td>
+                        <td>0.57</td>
+                        <td>1.30</td>
+                    </tr>
+                    <tr>
+                        <td>w/ ERP only</td>
+                        <td>97.83</td>
+                        <td>1.87</td>
+                        <td>1.35</td>
+                        <td>0.59</td>
+                        <td>1.28</td>
+                    </tr>
+                </tbody>
+            </table>
+            <caption>Table 3. Effect of the Dual-branch Design on various metrics: FD, KL, Δ<sub>abs</sub>θ, Δ<sub>abs</sub>φ, and Δ<sub>Angular</sub>. The arrows indicate that lower values are preferred for these metrics.</caption>
+        </div>
+
 
         <figure id="fig4">
             <img src="image/figure3.png" alt="Image 3" style="width: 100%; max-width: 900px; margin-top: 20px;">
