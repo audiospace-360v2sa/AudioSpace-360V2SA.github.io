@@ -573,7 +573,7 @@
     
 
 
-    <div class="video-carousel-section" style="text-align: center;">
+<div class="video-carousel-section" style="text-align: center;">
     <h2 class="chapter-title">Scene Transition Cases</h2>
     <hr class="chapter-line">
     <strong style="font-size: 19px; display: block; margin-bottom: 20px;">
@@ -719,6 +719,187 @@
         moveCarouselTrans(0);
     });
 </script>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ablation Study</title>
+  <style>
+    .fold-btn2 {
+      margin: 10px;
+      padding: 12px 24px;
+      background: linear-gradient(145deg, #6e7dff, #39c619);
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: all 0.3s ease-in-out;
+      box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .fold-btn2:hover {
+      background: linear-gradient(145deg, #5560ea, #6e7dff);
+      box-shadow: 4px 6px 12px rgba(0, 0, 0, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .fold-btn2:active {
+      background: linear-gradient(145deg, #5560ea, #6e7dff);
+      box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.2);
+      transform: translateY(0);
+    }
+    .video-row2 {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center; 
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .video-column2 {
+        width: 10%;
+        flex: 0 0 10px; 
+        box-sizing: border-box;
+        min-width: 200px;
+    }
+
+
+  </style>
+</head>
+
+<body>
+  <div class="intro" style="text-align: center;"></div>
+  <h2 class="chapter-title">Ablation Study</h2>
+  <hr class="chapter-line">
+  <p style="text-align: left;">
+    This section presents the comparison of generation results for the models listed in Tables 3 and 4 of the paper.
+  </p>
+
+  <div id="alt2-video-selector"></div>
+
+  <script>
+    const alt2_experiments = [
+      {
+        title: "Effect of Self-supervised Pre-training",
+        path: "videos_append",
+        folders: ["Eeg_WJTTRX0_230", "TKPZf_P5_18_10", "Z7Lh6Vr-OIw_163"]
+      },
+      {
+        title: "Effect of the Dual-branch Design",
+        path: "videos_append",
+        folders: ["6DHUZ1Jt4wo_1050", "4cI-i2Hq8tU_214","ZBXiIs_4H6M_41"]
+      }
+    ];
+
+    async function alt2_loadVideoList(folderPath) {
+      const simulatedData = {
+        "videos_append/Eeg_WJTTRX0_230": ["coarse-to-fine.mp4", "w_coarse.mp4", "w_fine.mp4", "w_pt.mp4"],
+        "videos_append/TKPZf_P5_18_10": ["coarse-to-fine.mp4", "w_coarse.mp4", "w_fine.mp4", "w_pt.mp4"],
+        "videos_append/Z7Lh6Vr-OIw_163": ["coarse-to-fine.mp4", "w_coarse.mp4", "w_fine.mp4", "w_pt.mp4"],
+        "videos_append/6DHUZ1Jt4wo_1050": ["ERC+FOV.mp4", "EAC+FOV.mp4", "w_EAC.mp4", "w_ERP.mp4", "w_FOV.mp4"],
+        "videos_append/4cI-i2Hq8tU_214": ["ERC+FOV.mp4", "EAC+FOV.mp4", "w_EAC.mp4", "w_ERP.mp4", "w_FOV.mp4"],
+        "videos_append/ZBXiIs_4H6M_41": ["ERC+FOV.mp4", "EAC+FOV.mp4", "w_EAC.mp4", "w_ERP.mp4", "w_FOV.mp4"]
+      };
+      return simulatedData[folderPath] || [];
+    }
+
+    function alt2_createVideoPlayer(videoPath) {
+      const container = document.createElement('div');
+      container.className = 'video-player-container';
+
+      const iframe = document.createElement('iframe');
+      iframe.src = `demo-player.html?videoPath=${encodeURIComponent(videoPath)}`;
+
+      const fullscreenButton = document.createElement('button');
+      fullscreenButton.className = 'fullscreen-btn';
+      fullscreenButton.innerText = '⛶';
+      fullscreenButton.onclick = () => alt2_toggleFullscreen(container);
+
+      container.appendChild(iframe);
+      container.appendChild(fullscreenButton);
+      return container;
+    }
+
+    function alt2_toggleFullscreen(container) {
+      if (!document.fullscreenElement) {
+        container.requestFullscreen().catch(e => console.error("Fullscreen failed:", e));
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    function alt2_generateUI() {
+      const container = document.getElementById('alt2-video-selector');
+      container.innerHTML = "";
+
+      alt2_experiments.forEach((exp, expIndex) => {
+        const button = document.createElement('button');
+        button.className = 'fold-btn2';
+        button.innerText = exp.title;
+
+        const sectionDiv = document.createElement('div');
+        sectionDiv.style.display = 'none';
+        sectionDiv.id = `alt2-section-${expIndex}`;
+
+        container.appendChild(button);
+        container.appendChild(sectionDiv);
+
+        button.onclick = async () => {
+          const isHidden = sectionDiv.style.display === 'none';
+          sectionDiv.style.display = isHidden ? 'block' : 'none';
+
+          if (isHidden && sectionDiv.childElementCount === 0) {
+            for (const folder of exp.folders) {
+              const folderPath = `${exp.path}/${folder}`;
+              const files = await alt2_loadVideoList(folderPath);
+
+              const sectionItem = document.createElement('div');
+              sectionItem.className = 'section';
+
+              const title = document.createElement('div');
+              title.className = 'section-title';
+              title.innerText = `Video ID: ${folder}`;
+              sectionItem.appendChild(title);
+
+              const row = document.createElement('div');
+              row.className = 'video-row2';
+
+              files.forEach(filename => {
+                const col = document.createElement('div');
+                col.className = 'video-column2';
+
+                const player = alt2_createVideoPlayer(`${folderPath}/${filename}`);
+
+                const label = document.createElement('div');
+                label.className = 'video-title';
+                label.innerText = filename.replace(".mp4", "").replace("_", "/");
+
+                col.appendChild(player);
+                col.appendChild(label);
+                row.appendChild(col);
+              });
+
+              sectionItem.appendChild(row);
+              sectionDiv.appendChild(sectionItem);
+            }
+          }
+        };
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', alt2_generateUI);
+  </script>
+</body>
+</html>
+
+
+
+
+
 
     </div>
         <h2 class="chapter-title"> Quantitative and Qualitative Results</h2>
